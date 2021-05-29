@@ -4,40 +4,37 @@ const slugify = require("slugify");
 const Category = require("../models/category");
 
 exports.createProduct = (req, res) => {
-  //res.status(200).json( { file: req.files, body: req.body } );
-
-  const { name, price, description, category, quantity, createdBy } = req.body;
-  let productPictures = [];
-
-  if (req.files.length > 0) {
-    productPictures = req.files.map((file) => {
-      return { img: file.location };
-    });
-  }
+  const slug = req.body.name.replace(/ /g, '-') +'-'+ Date.now();
 
   const product = new Product({
-    name: name,
-    slug: slugify(name),
-    price,
-    quantity,
-    description,
-    productPictures,
-    category,
-    createdBy: req.user._id,
+      _id: new mongoose.Types.ObjectId(),
+      name: req.body.name,
+      slug: slug,
+      price: req.body.price,
+      quantity: req.body.stock,
+      description: req.body.description,
+      productPic: req.body.productPic,
+      keyword: req.body.keyword,
+      category: req.body.category,
+      createdBy: req.body.createdBy
   });
 
-  product.save((error, product) => {
-
-    
-    if (error) return res.status(400).json({ error });
-    if (product) {
-      res.status(201).json({ product, files: req.files });
-    }
-  });
+  product.save()
+  .then(product => {
+      res.status(201).json({
+          message: product
+      });
+  })
+  .catch(er => {
+      res.status(500).json({
+          error: er
+      });
+  })
+  
 };
 
 exports.getProductsBySlug = (req, res) => {
-  const { slug } = req.params;
+  const { slug } = req.body;
   Category.findOne({ slug: slug })
     .select("_id type")
     .exec((error, category) => {
@@ -101,14 +98,14 @@ exports.getProductDetailsById = (req, res) => {
   }
 };
 
-// new update
+
 exports.deleteProductById = (req, res) => {
-  const { productId } = req.body.payload;
+  const  productId  = req.body.id;
   if (productId) {
     Product.deleteOne({ _id: productId }).exec((error, result) => {
       if (error) return res.status(400).json({ error });
       if (result) {
-        res.status(202).json({ result });
+        res.status(202).json({ msg: "product deleted succesfully" });
       }
     });
   } else {
