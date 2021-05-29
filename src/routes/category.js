@@ -29,7 +29,7 @@ const upload = multer({ storage });
 router.post(
   "/category/create",
   requireSignin,
-  superAdminMiddleware,
+  adminMiddleware,
   upload.single("categoryImage"),
   addCategory
 );
@@ -37,7 +37,7 @@ router.get("/category/getcategory", getCategories);
 router.post(
   "/category/update",
   requireSignin,
-  superAdminMiddleware,
+  adminMiddleware,
   upload.array("categoryImage"),
   updateCategories
 );

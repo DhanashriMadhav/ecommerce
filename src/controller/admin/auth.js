@@ -2,7 +2,7 @@ const User = require("../../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const shortid = require("shortid");
-
+const config = require('../../config/config.json')
 exports.signup = (req, res) => {
   User.findOne({ email: req.body.email }).exec((error, user) => {
     if (user)
@@ -31,7 +31,7 @@ exports.signup = (req, res) => {
       _user.save((error, data) => {
         if (error) {
           return res.status(400).json({
-            message: "Something went wrong",
+            message: "server error",
           });
         }
 
@@ -56,7 +56,7 @@ exports.signin = (req, res) => {
       ) {
         const token = jwt.sign(
           { _id: user._id, role: user.role },
-          process.env.JWT_SECRET,
+          config.jwtSecret,
           { expiresIn: "1d" }
         );
         const { _id, firstName, lastName, email, role, fullName } = user;
@@ -71,7 +71,7 @@ exports.signin = (req, res) => {
         });
       }
     } else {
-      return res.status(400).json({ message: "Something went wrong" });
+      return res.status(400).json({ message: "Server error" });
     }
   });
 };

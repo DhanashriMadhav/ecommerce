@@ -1,0 +1,5 @@
+{
+    "mongooURI":"mongodb+srv://ecommerce:ecommerce@ecommerce.hk2pr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "jwtSecret":"secretToken"
+    
+}

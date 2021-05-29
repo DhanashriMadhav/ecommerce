@@ -4,7 +4,7 @@ const shortid = require("shortid");
 const path = require("path");
 const multerS3 = require("multer-s3");
 const aws = require("aws-sdk");
-
+const config= require("../config/config.json")
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(path.dirname(__dirname), "uploads"));
@@ -41,7 +41,7 @@ exports.uploadS3 = multer({
 exports.requireSignin = (req, res, next) => {
   if (req.headers.authorization) {
     const token = req.headers.authorization.split(" ")[1];
-    const user = jwt.verify(token, process.env.JWT_SECRET);
+    const user = jwt.verify(token, config.jwtSecret);
     req.user = user;
   } else {
     return res.status(400).json({ message: "Authorization required" });
@@ -68,7 +68,7 @@ exports.adminMiddleware = (req, res, next) => {
 
 exports.superAdminMiddleware = (req, res, next) => {
   if (req.user.role !== "super-admin") {
-    return res.status(200).json({ message: "Super Admin access denied" });
+    return res.status(200).json({ message: "Super access denied" });
   }
   next();
 };
